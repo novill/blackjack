@@ -15,12 +15,8 @@ class Interface
     puts "Баланс #{player}: #{player.balance}"
   end
 
-  def show_player_card_status(player)
-    puts "Карты #{player}: #{player.show_open_cards}. Сумма: #{player.card_sum}"
-  end
-
-  def show_masked_card_status(player)
-    puts "Карты #{player}: #{player.show_masked_cards}"
+  def show_hand_status(players)
+    players.each { |player| puts "Карты #{player}: #{player.hand}" }
   end
 
   def menu_dialog(menu)
@@ -32,7 +28,7 @@ class Interface
 
   def print_array(array, start_message = nil)
     puts start_message if start_message
-    array.each_with_index { |item, index| puts "#{index}. #{item}" }
+    array.each_with_index { |item, index| puts "#{index + 1}. #{item}" }
     nil
   end
 end

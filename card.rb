@@ -1,25 +1,49 @@
 # frozen_string_literal: true
 
 class Card
-  FACE = %w[2 3 4 5 6 7 8 9 10 В Д К Т].freeze
-  VALUE = [2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 10, 11].freeze
-  SUIT = %w[+ <3 ^ <>].freeze
+  FACE_VALUE = {
+    '2' => 2,
+    '3' => 3,
+    '4' => 4,
+    '5' => 5,
+    '6' => 6,
+    '7' => 7,
+    '8' => 8,
+    '9' => 9,
+    '10' => 10,
+    'J' => 10,
+    'Q' => 10,
+    'K' => 10,
+    'A' => 11
+  }.freeze
+  SUITS = %w[♠ ♥ ♣ ♦].freeze
+  ACE_CORRECTION = 10
 
-  attr_reader :suit, :face
+  attr_reader :suit, :face, :masked
 
-  def initialize(card_index)
-    @suit, @face = card_index.divmod(13)
+  def initialize(suit, face)
+    @suit = suit
+    @face = face
+    @value = FACE_VALUE[face]
+    @masked = true
+  end
+
+  attr_reader :value
+
+  def ace?
+    @value == 11
+  end
+
+  def unmask
+    @masked = false
+    self
   end
 
   def to_s
-    "#{FACE[@face]}#{SUIT[@suit]}"
-  end
-
-  def ace?
-    @face == FACE[-1]
-  end
-
-  def value
-    VALUE[@face]
+    if @masked
+      '**'
+    else
+      "#{@face}#{@suit}"
+    end
   end
 end

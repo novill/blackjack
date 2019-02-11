@@ -4,10 +4,10 @@ require_relative 'card.rb'
 
 class Deck
   def initialize
-    @cards = (0..51).to_a.shuffle
+    @all_cards = Card::SUITS.product(Card::FACE_VALUE.keys).map { |suit_face| Card.new(*suit_face) }.shuffle
   end
 
   def extract_card
-    Card.new(@cards.shift)
+    @all_cards.shift
   end
 end
