@@ -16,29 +16,11 @@ class Game
     @interface.show_player_balance(@dealer)
   end
 
-  def start_game
+  def play_game
     loop do # раздачи
       @interface.notify "#{'-' * 30}\nНачало раздачи\n#{'-' * 30}"
       start_session
-      loop do # раунд игры
-        @interface.show_player_card_status(@player)
-        @interface.show_masked_card_status(@dealer)
-
-        # Ход игрока
-        case @interface.menu_dialog(ROUND_DECISION_MENU)
-        when 1 then add_card_action(@player)
-        when 2 then break
-        end
-
-        # Так как дилер видит карты игрока, при переборе ему ходить смысла нет
-        break if @player.card_sum > 21
-
-        # Ход дилера
-        add_card_action(@dealer) if @dealer.cards.size < 3 && @dealer.card_sum < 17
-
-        break if @player.cards.size == 3 && @dealer.cards.size == 3
-      end
-      @interface.notify 'Результат:'
+      do_rounds
       finish_session
 
       if @player.balance == 0
@@ -75,7 +57,29 @@ class Game
     end
   end
 
+  def do_rounds
+    loop do # раунд игры
+      @interface.show_player_card_status(@player)
+      @interface.show_masked_card_status(@dealer)
+
+      # Ход игрока
+      case @interface.menu_dialog(ROUND_DECISION_MENU)
+      when 1 then add_card_action(@player)
+      when 2 then break
+      end
+
+      # Так как дилер видит карты игрока, при переборе ему ходить смысла нет
+      break if @player.card_sum > 21
+
+      # Ход дилера
+      add_card_action(@dealer) if @dealer.cards.size < 3 && @dealer.card_sum < 17
+
+      break if @player.cards.size == 3 && @dealer.cards.size == 3
+    end
+  end
+
   def finish_session
+    @interface.notify "#{'*'*10} Результат:"
     @interface.show_player_card_status(@player)
     @interface.show_player_card_status(@dealer)
 
@@ -101,4 +105,4 @@ class Game
 
 end
 
-Game.new.start_game
+Game.new.play_game
