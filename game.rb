@@ -27,14 +27,13 @@ class Game
         case @interface.menu_dialog(ROUND_DECISION_MENU)
         when 1 then add_card_action(@player)
         when 2 then break
-        else {} # всё что не 1 и не 2 пропуск хода
         end
         # Ход дилера
         @dealer.add_card(@deck.extract_card) if @dealer.cards.size < 3 && @dealer.card_sum < 17
 
         break if @player.cards.size == 3 && @dealer.cards.size == 3
       end
-      @interface.notify "Результат:"
+      @interface.notify 'Результат:'
       finish_session
 
       if @player.balance == 0

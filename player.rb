@@ -11,7 +11,7 @@ class Player
 
   def card_sum
     sum = @cards.map(&:value).sum
-    return sum if sum <= 21 || !@cards.any?(&:ace?)
+    return sum if sum <= 21 || @cards.none?(&:ace?)
 
     # если сумма больше 21 и есть тузы, по очереди тузы считаем за 1
     @cards.select(&ace?).size.times do
