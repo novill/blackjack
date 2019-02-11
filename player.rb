@@ -10,8 +10,15 @@ class Player
   end
 
   def card_sum
-    # TODO: обработать тузы (их может быть 3)
-    @cards.map(&:value).sum
+    sum = @cards.map(&:value).sum
+    return sum if sum <= 21 || !@cards.any?(&:ace?)
+
+    # если сумма больше 21 и есть тузы, по очереди тузы считаем за 1
+    @cards.select(&ace?).size.times do
+      sum -= 10
+      break if sum < 21
+    end
+    sum
   end
 
   # def decision
@@ -34,7 +41,8 @@ class Player
   end
 
   def make_bet
-    @balance += 10
+    @balance -= 10
+    10
   end
 
   def back_bet
