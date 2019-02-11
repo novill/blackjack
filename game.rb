@@ -18,6 +18,7 @@ class Game
 
   def start_game
     loop do # раздачи
+      @interface.notify "#{'-' * 30}\nНачало раздачи\n#{'-' * 30}"
       start_session
       loop do # раунд игры
         @interface.show_player_card_status(@player)
@@ -28,8 +29,12 @@ class Game
         when 1 then add_card_action(@player)
         when 2 then break
         end
+
+        # Так как дилер видит карты игрока, при переборе ему ходить смысла нет
+        break if @player.card_sum > 21
+
         # Ход дилера
-        @dealer.add_card(@deck.extract_card) if @dealer.cards.size < 3 && @dealer.card_sum < 17
+        add_card_action(@dealer) if @dealer.cards.size < 3 && @dealer.card_sum < 17
 
         break if @player.cards.size == 3 && @dealer.cards.size == 3
       end
@@ -52,35 +57,38 @@ class Game
 
   private
 
-  def add_card_action(player)
-    if player.cards.size > 2
+  def add_card_action(current_player)
+    if current_player.cards.size > 2
       @interface.notify 'Нельзя брать еще одну карту'
     else
-      @player.add_card(@deck.extract_card)
+      current_player.add_card(@deck.extract_card)
+      @interface.notify "Игрок #{current_player} берет карту"
     end
   end
 
   def start_session
     @deck = Deck.new
     @bank = @player.make_bet + @dealer.make_bet
-    2.times { @player.add_card(@deck.extract_card) }
-    2.times { @dealer.add_card(@deck.extract_card) }
+    2.times do
+      @player.add_card(@deck.extract_card)
+      @dealer.add_card(@deck.extract_card)
+    end
   end
 
   def finish_session
     @interface.show_player_card_status(@player)
     @interface.show_player_card_status(@dealer)
 
-    case who_wins
+    case @player.session_result <=> @dealer.session_result
     when 1 then
-      @interface.notify 'Вы выиграли'
+      @interface.notify "#{'*'*10} Вы выиграли"
       @player.win_bank(@bank)
     when 0 then
-      @interface.notify 'Ровно'
+      @interface.notify "#{'*'*10} Ровно' "
       @player.back_bet
       @dealer.back_bet
     when -1 then
-      @interface.notify 'Вы програли'
+      @interface.notify "#{'*'*10} Вы програли"
       @dealer.win_bank(@bank)
     end
     @player.clean_cards
@@ -88,15 +96,9 @@ class Game
 
     @interface.show_player_balance(@player)
     @interface.show_player_balance(@dealer)
-    @interface.notify "#{'-' * 30}\nРаздача Завершена\n#{'-' * 30}"
+    @interface.notify "#{'=' * 30}\nРаздача Завершена\n#{'=' * 30}"
   end
 
-  def who_wins
-    player_result = @player.card_sum <= 21 ? @player.card_sum : 0
-    dealer_result = @dealer.card_sum <= 21 ? @dealer.card_sum : 0
-
-    player_result <=> dealer_result
-  end
 end
 
 Game.new.start_game
