@@ -8,4 +8,8 @@ class Dealer < Player
   def should_get_card?
     !hand.full? && hand.card_sum < MIN_DEALDER_LIMIT
   end
+
+  def unmask_hand
+    @hand.unmask
+  end
 end

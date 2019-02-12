@@ -50,8 +50,8 @@ class Game
     @deck = Deck.new
     @bank.make_bet(@player, @dealer)
     2.times do
-      @player.hand.add_card(@deck.extract_card.unmask)
-      @dealer.hand.add_card(@deck.extract_card)
+      @player.add_card(@deck.extract_card.unmask)
+      @dealer.add_card(@deck.extract_card)
     end
   end
 
@@ -65,30 +65,28 @@ class Game
       when 3 then break
       end
 
-      break if @player.hand.overload?
-
       # Ход дилера
-      @dealer.hand.add_card(@deck.extract_card) if @dealer.should_get_card?
+      @dealer.add_card(@deck.extract_card) if @dealer.should_get_card?
 
-      break if @player.hand.full? && @dealer.hand.full?
+      break if @player.hand_full? && @dealer.hand_full?
     end
   end
 
   def add_player_card_action
-    if @player.hand.full?
+    if @player.hand_full?
       @interface.notify 'Нельзя брать еще одну карту'
     else
-      @player.hand.add_card(@deck.extract_card.unmask)
+      @player.add_card(@deck.extract_card.unmask)
       @interface.notify "Игрок #{@player} берет карту"
     end
   end
 
   def finish_session
     @interface.notify "#{'*' * 10} Результат:"
-    @dealer.hand.unmask
+    @dealer.unmask_hand
     @interface.show_hand_status([@player, @dealer])
 
-    case @player.hand.session_result <=> @dealer.hand.session_result
+    case @player.session_result <=> @dealer.session_result
     when 1 then
       @interface.notify "#{'*' * 10} Вы выиграли"
       @bank.reward_winner(@player)
@@ -99,8 +97,8 @@ class Game
       @interface.notify "#{'*' * 10} Вы програли"
       @bank.reward_winner(@dealer)
     end
-    @player.hand.clean_cards
-    @dealer.hand.clean_cards
+    @player.clean_hand
+    @dealer.clean_hand
 
     @interface.show_player_balance(@player)
     @interface.show_player_balance(@dealer)

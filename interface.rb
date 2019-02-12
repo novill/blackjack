@@ -28,7 +28,7 @@ class Interface
 
   def print_array(array, start_message = nil)
     puts start_message if start_message
-    array.each_with_index { |item, index| puts "#{index + 1}. #{item}" }
+    array.each.with_index(1) { |item, index| puts "#{index}. #{item}" }
     nil
   end
 end

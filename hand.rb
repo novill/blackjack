@@ -16,7 +16,9 @@ class Hand
     sum = @cards.map(&:value).sum
     return sum if sum <= MAX_POINTS || @cards.none?(&:ace?)
 
-    @cards.select(&ace?).size.times { sum -= CARD::ACE_CORRECTION if sum > MAX_POINTS }
+    @cards.select(&ace?).size.times do
+      sum -= CARD::ACE_CORRECTION if sum > MAX_POINTS
+    end
     sum
   end
 

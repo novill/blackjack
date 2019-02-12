@@ -15,6 +15,26 @@ class Player
     @balance = 100
   end
 
+  def add_card(card)
+    @hand.add_card(card)
+  end
+
+  def overload?
+    @hand.overload?
+  end
+
+  def hand_full?
+    @hand.full?
+  end
+
+  def session_result
+    @hand.session_result
+  end
+
+  def clean_hand
+    @hand.clean_cards
+  end
+
   def make_bet(value)
     @balance -= value
   end
